@@ -139,8 +139,10 @@ class UniversalViewer extends AbstractHelper
             return $this->renderUv2($urlManifest, $options, $resourceName, $isSite);
         } elseif ($uvVersion === '3') {
             return $this->renderUv3($urlManifest, $options, $resourceName, $isSite);
-        } else {
+        } elseif ($uvVersion == '4') {
             return $this->renderUv4($urlManifest, $options, $resourceName, $isSite);
+        } else {
+            return '';
         }
     }
 
