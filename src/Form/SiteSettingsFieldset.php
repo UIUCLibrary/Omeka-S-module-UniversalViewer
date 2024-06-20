@@ -15,12 +15,19 @@ class SiteSettingsFieldset extends SettingsFieldset
                 'type' => Element\Checkbox::class,
                 'options' => [
                     'element_group' => 'player',
-                    'label' => 'Use Universal Viewer config from the theme for v4 (deprecated)', // @translate
+                    'label' => 'Version of Universal viewer', // @translate
+                    'value_options' => [
+                        '1' => 'None',
+                        '2' => 'Version 2.0.2 (better speed for some scanned pdf; require iiif v2)', // @translate
+                        '3' => 'Version 3.1.1 (more modern, but deprecated)', // @translate
+                        '4' => 'Version 4 (up to date)', // @translate
+                    ],
                 ],
                 'attributes' => [
                     'id' => 'universalviewer_config_theme',
                 ],
             ])
+
         ;
     }
 }

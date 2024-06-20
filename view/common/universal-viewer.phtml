@@ -34,8 +34,7 @@ $this->headScript()
 
 <div id="<?= $config['id'] ?>" class="uv universal-viewer viewer"></div>
 
-<?php else: // Version 4.
-
+<?php elseif($version === '4'): // Version 4.
 $config['id'] = $config['id'] ?? 'uv';
 $configJson = json_encode($config, 448);
 $script = <<<JS
@@ -50,6 +49,6 @@ $this->headScript()
 ?>
 
 <div id="<?= $config['id'] ?>" class="uv universal-viewer viewer"></div>
-
+<?php else: ?>
 <?php
 endif;

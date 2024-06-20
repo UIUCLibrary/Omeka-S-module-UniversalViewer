@@ -153,12 +153,17 @@ class UniversalViewer extends AbstractHelper
      */
     protected function render($urlManifest, array $options = [], $resourceName = null)
     {
-        if ($this->version === '2') {
-            return $this->renderUv2($urlManifest, $options, $resourceName);
-        } elseif ($this->version === '3') {
-            return $this->renderUv3($urlManifest, $options, $resourceName);
+        $isSite = $this->view->status()->isSiteRequest();
+        $setting = $isSite ? $this->view->plugin('siteSetting') : $this->view->plugin('setting');
+        $uvVersion = (string) $setting('universalviewer_version') ?: '4';
+        if ($uvVersion === '2') {
+            return $this->renderUv2($urlManifest, $options, $resourceName, $isSite);
+        } elseif ($uvVersion === '3') {
+            return $this->renderUv3($urlManifest, $options, $resourceName, $isSite);
+        } elseif ($uvVersion == '4') {
+            return $this->renderUv4($urlManifest, $options, $resourceName, $isSite);
         } else {
-            return $this->renderUv4($urlManifest, $options, $resourceName);
+            return '';
         }
     }
 
