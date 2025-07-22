@@ -76,11 +76,13 @@ class UniversalViewer extends AbstractHelper
      */
     public function __invoke($resource, $options = []): string
     {
-        if (empty($resource)) {
+        $view = $this->getView();
+
+        if (empty($resource) && $view->params()->fromQuery('url') === null) {
             return '';
         }
 
-        $view = $this->getView();
+        $queryManiftest = $view->params()->fromQuery('url') ?? null;
         $this->isSite = $view->status()->isSiteRequest();
         $this->version = $this->isSite
             ? (string) $this->view->siteSetting('universalviewer_version', '4')
@@ -102,11 +104,18 @@ class UniversalViewer extends AbstractHelper
         }
 
         // Prepare the url for the manifest of a record after additional checks.
-        $resourceName = $resource->resourceName();
-        if (!in_array($resourceName, ['items', 'item_sets'])) {
-            return '';
+        if ($resource) {
+            $resourceName = $resource->resourceName();
+            if (!in_array($resourceName, ['items', 'item_sets'])) {
+                return '';
+            }
+        } else {
+            $resourceName = 'none';
         }
 
+        if ($queryManiftest) {
+            return $this->render($queryManiftest, $options, $resourceName);
+        }
         // Determine the url of the manifest from a field in the metadata.
         $externalManifest = $view->iiifManifestExternal($resource, $iiifServerIsActive);
         if ($externalManifest) {
@@ -176,10 +185,10 @@ class UniversalViewer extends AbstractHelper
             ->prependStylesheet($assetUrl('css/universal-viewer.css', 'UniversalViewer'));
         $this->view->headScript()
             ->appendFile(
-                    $assetUrl('vendor/uv2/lib/embed.js', 'UniversalViewer', false, false),
-                    'application/javascript',
-                    ['id' => 'embedUV']
-                )
+                $assetUrl('vendor/uv2/lib/embed.js', 'UniversalViewer', false, false),
+                'application/javascript',
+                ['id' => 'embedUV']
+            )
                 ->appendScript('/* wordpress fix */', 'application/javascript');
 
         $configUri = isset($options['config'])
@@ -192,7 +201,7 @@ class UniversalViewer extends AbstractHelper
             'iiifResourceUri' => $urlManifest,
             'configUri' => $configUri,
             'embedded' => true,
-            'style' => 'background-color: #000; height: 600px;'
+            'style' => 'background-color: #000; height: 600px;',
         ];
 
         $locale = $this->view->identity()
@@ -300,31 +309,31 @@ class UniversalViewer extends AbstractHelper
             $config = array_merge($config, $siteConfig, $mainConfig);
         }
 
-       // For internal locales, only the name is needed.
-       // The first is the default locale. The others are optional.
-       // Default locales are always included.
-       // Use the locale of the site if not set in the config.
-       // A locale is required to make the viewer working.
-       if (empty($config['locales'])) {
-           $locales = [
-               'cy-CY' => 'cy-GB',
-               'en-EN' => 'en-GB',
-               'fr-FR' => 'fr-FR',
-               'pl-PL' => 'pl-PL',
-               'sv-SE' => 'sv-SE',
-               'sv-SV' => 'sv-SE',
-           ];
-           $locale = $this->view->identity()
-               ? (string) $this->view->userSetting('locale')
-               : (string) $mainOrSiteSetting('locale');
-           $locale = mb_strlen($locale) === 2
-               ? mb_strtolower($locale) . '-' . mb_strtoupper($locale)
-               : str_replace('_', '-', $locale);
-           $locale = $locales[$locale] ??'en-GB';
-           $config['locales'] = [
-               ['name' => $locale],
-           ];
-       }
+        // For internal locales, only the name is needed.
+        // The first is the default locale. The others are optional.
+        // Default locales are always included.
+        // Use the locale of the site if not set in the config.
+        // A locale is required to make the viewer working.
+        if (empty($config['locales'])) {
+            $locales = [
+                'cy-CY' => 'cy-GB',
+                'en-EN' => 'en-GB',
+                'fr-FR' => 'fr-FR',
+                'pl-PL' => 'pl-PL',
+                'sv-SE' => 'sv-SE',
+                'sv-SV' => 'sv-SE',
+            ];
+            $locale = $this->view->identity()
+                ? (string) $this->view->userSetting('locale')
+                : (string) $mainOrSiteSetting('locale');
+            $locale = mb_strlen($locale) === 2
+                ? mb_strtolower($locale) . '-' . mb_strtoupper($locale)
+                : str_replace('_', '-', $locale);
+            $locale = $locales[$locale] ?? 'en-GB';
+            $config['locales'] = [
+                ['name' => $locale],
+            ];
+        }
 
         $config += $options;
 

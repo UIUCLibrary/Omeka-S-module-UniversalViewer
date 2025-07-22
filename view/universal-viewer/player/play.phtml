@@ -4,15 +4,19 @@
  * @var \Omeka\Api\Representation\AbstractResourceEntityRepresentation $resource
  */
 
-$this->htmlElement('body')->appendAttribute('class', 'play fullscreen');
-$title = $resource->displayTitle();
-$creator = $resource->value('dcterms:creator', ['type' => 'literal']);
-if ($creator) {
-    $title .= ' - ' . $creator;
+if ($resource) {
+    $title = $resource->displayTitle();
+    $creator = $resource->value('dcterms:creator', ['type' => 'literal']);
+    if ($creator) {
+        $title .= ' - ' . $creator;
+    }
+    $this->pageTitle($title);
+
 }
+$this->htmlElement('body')->appendAttribute('class', 'play fullscreen');
+
 
 // No echo: add title to meta.
-$this->pageTitle($title);
 
 $this->htmlElement('html')
     ->setAttribute('lang', $this->lang());

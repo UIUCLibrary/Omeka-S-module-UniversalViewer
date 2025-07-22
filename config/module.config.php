@@ -105,6 +105,18 @@ return [
                     ],
                 ],
             ],
+            'uv-viewer' => [
+                'type' => \Laminas\Router\Http\Literal::class,
+                'options' => [
+                    'route' => '/uv-viewer',
+                    'defaults' => [
+                        '__NAMESPACE__' => 'UniversalViewer\Controller',
+                        'controller' => 'Player',
+                        'action' => 'index',
+                    ],
+                ],
+            ],
+
 
             // If really needed, the next route may be uncommented to keep
             // compatibility with the old schemes used by the plugin for Omeka 2

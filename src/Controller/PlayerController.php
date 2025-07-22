@@ -50,12 +50,17 @@ class PlayerController extends AbstractActionController
     public function playAction()
     {
         // The exception is thrown automatically.
-        $id = $this->params('id');
-        $resource = $this->api()->read('resources', $id)->getContent();
+        $id = $this->params('id') ?? $this->params()->fromQuery('id') ?? null;
+        $resource = $id ? $this->api()->read('resources', $id)->getContent() : null;
         $view = new ViewModel([
             'resource' => $resource,
         ]);
         return $view
             ->setTerminal(true);
+    }
+
+    public function viewerAction()
+    {
+
     }
 }
